@@ -7,31 +7,31 @@
             <h5 class="mb-0">toevoegen</h5>
           </CCardHeader>
           <CCardBody>
-            <CButton color="primary" class="w-100 h-100 text-lg" @click="toggleCreateModal" shape="rounded-50">+</CButton>
+            <CButton color="primary" class="w-100 h-100 text-lg" @click="toggleCreateModal">+</CButton>
           </CCardBody>
         </CCard>
       </CCol>
 
-      <CCol :md="4" class="mb-4">
+      <CCol v-for="project in this.projects" :key="project.id" :md="4" class="mb-4">
         <CCard>
           <CCardHeader>
             <div class="d-flex justify-content-between">
-              <h5 class="mb-0">Project 1</h5>
+              <h5 class="mb-0">{{ project.name }}</h5>
               <CDropdown variant="btn-group">
                 <CDropdownToggle color="secondary">
                   <CIcon name="cil-settings" />
                 </CDropdownToggle>
                 <CDropdownMenu>
-                  <CDropdownItem @click="toggleDeleteModal">verwijderen</CDropdownItem>
-                  <CDropdownItem href="#">lid toevoegen</CDropdownItem>
-                  <CDropdownItem href="#">lid verwijderen</CDropdownItem>
+                  <CDropdownItem @click="toggleDeleteModal(project.id)">verwijderen</CDropdownItem>
+                  <CDropdownItem href="#" @click="navigateToDiagrams(project.id)">Diagrammen</CDropdownItem>
+                  <CDropdownItem href="#" @click="navigateToInvitationsForProject(project.id)">Uitnodigingen bekijken</CDropdownItem>
                 </CDropdownMenu>
               </CDropdown>
             </div>
             
           </CCardHeader>
           <CCardBody>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis numquam quis dolorem est iste qui commodi vero optio, debitis reprehenderit?</p>
+            <p>{{ project.description }}</p>
           </CCardBody>
         </CCard>
       </CCol>
@@ -47,20 +47,26 @@
           type="text"
           id="create-project-input"
           label="Projectnaam"
+          v-model="this.project.name"
           aria-describedby="create-project-input"
         />
+        <span v-for="error in this.projectNameErrors" :key="error" class="text-danger d-block">{{ error }}</span>
         
         <CFormTextarea
           id="create-project-description-input"
           label="Beschrijving"
           rows="3"
+          v-model="this.project.description"
           aria-describedby="create-project-description-input"
         />
+
+        <span v-for="error in this.projectDescriptionErrors" :key="error" class="text-danger d-block">{{ error }}</span>
+
       </CForm>
     </CModalBody>
     <CModalFooter>
       <CButton color="secondary" @click="closeCreateModal">anuleren</CButton>
-      <CButton color="primary">Project aanmaken</CButton>
+      <CButton color="primary" @click="this.createProject(this.project)">Project aanmaken</CButton>
     </CModalFooter>
   </CModal>
 
@@ -74,7 +80,7 @@
     </CModalBody>
     <CModalFooter>
       <CButton color="secondary" @click="closeDeleteModal">anuleren</CButton>
-      <CButton color="danger">Verwijderen</CButton>
+      <CButton color="danger" @click="this.deleteProject">Verwijderen</CButton>
     </CModalFooter>
   </CModal>
 </template>
@@ -94,7 +100,19 @@ import { CButton, CCardBody, CCardHeader, CFormTextarea } from '@coreui/vue';
     return { 
       visibleCreateModal: false,
       visibleDeleteModal: false,
+      projectNameErrors: [],
+      projectDescriptionErrors: [],
+      idToDelete: '',
+      projects: [],
+      project: {
+        name: '',
+        description: ''
+      }
     }
+  },
+
+  async created(){
+    this.projects = await this.$store.dispatch("getProjectsFromApi");
   },
   methods: {
     toggleCreateModal() {
@@ -103,11 +121,37 @@ import { CButton, CCardBody, CCardHeader, CFormTextarea } from '@coreui/vue';
     closeCreateModal() {
       this.visibleCreateModal = false;
     },
-    toggleDeleteModal() {
+    toggleDeleteModal(id) {
+      this.idToDelete = id;
       this.visibleDeleteModal = true;
     },
     closeDeleteModal() {
       this.visibleDeleteModal = false;
+    },
+    async createProject(project){
+      try{
+        const createdProject = await this.$store.dispatch("createProject", { name: this.project.name, description: this.project.description});
+        this.projects.push(createdProject);
+        this.visibleCreateModal = false;
+      }catch(errorResponse){
+        if(errorResponse.status === 400){
+          this.projectNameErrors = errorResponse.data.errors.name;
+          this.projectDescriptionErrors = errorResponse.data.errors.description;
+        }
+      }
+    },
+
+    async navigateToDiagrams(projectId){
+      this.$router.push({ path: `/projects/${projectId}/diagrams/`});
+    },
+
+    async deleteProject(){
+      await this.$store.dispatch("deleteProject", {projectId: this.idToDelete});
+      this.projects = this.projects.filter(project => project.id !== this.idToDelete);
+      this.visibleDeleteModal = false;
+    },
+    navigateToInvitationsForProject(projectId){
+      this.$router.push({ path: `projects/${projectId}/invitations`});
     }
   }
   }

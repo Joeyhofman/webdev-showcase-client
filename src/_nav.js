@@ -1,4 +1,7 @@
-export default [
+import { userHasRole } from "./router/index";
+
+
+const sideBarItems = [
   {
     component: 'CNavTitle',
     name: 'Projecten',
@@ -7,16 +10,6 @@ export default [
     component: 'CNavItem',
     name: 'Mijn projecten',
     to: '/projects',
-    icon: 'cil-people',
-  },
-  {
-    component: 'CNavTitle',
-    name: 'Gebruikers',
-  },
-  {
-    component: 'CNavItem',
-    name: 'Gebruikers',
-    to: '/users',
     icon: 'cil-people',
   },
   {
@@ -48,3 +41,23 @@ export default [
     ],
   }
 ]
+
+async function pushProtectedItems(){
+  if(userHasRole("Admin")){
+    sideBarItems.push({
+      component: 'CNavTitle',
+      name: 'Gebruikers',
+    })
+    
+    sideBarItems.push({
+      component: 'CNavItem',
+      name: 'Gebruikers',
+      to: '/users',
+      icon: 'cil-people',
+    });
+  }
+}
+
+pushProtectedItems();
+
+export default sideBarItems;

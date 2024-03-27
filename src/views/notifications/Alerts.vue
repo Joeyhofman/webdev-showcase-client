@@ -1,156 +1,130 @@
 <template>
   <CRow>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Alert</strong>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Vue Alert is prepared for any length of text, as well as an optional
-            close button. For a styling, use one of the
-            <strong>required</strong> contextual <code>color</code> props (e.g.,
-            <code>primary</code>). For inline dismissal, use the
-            <a
-              href="https://coreui.io/vue/docs/components/alert.html#dismissing"
-            >
-              dismissing prop
-            </a>
-            .
-          </p>
-          <DocsExample href="components/alert.html">
-            <CAlert color="primary"
-              >A simple primary alert—check it out!</CAlert
-            >
-            <CAlert color="secondary"
-              >A simple secondary alert—check it out!</CAlert
-            >
-            <CAlert color="success"
-              >A simple success alert—check it out!</CAlert
-            >
-            <CAlert color="danger">A simple danger alert—check it out!</CAlert>
-            <CAlert color="warning"
-              >A simple warning alert—check it out!</CAlert
-            >
-            <CAlert color="info">A simple info alert—check it out!</CAlert>
-            <CAlert color="light">A simple light alert—check it out!</CAlert>
-            <CAlert color="dark">A simple dark alert—check it out!</CAlert>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Alert</strong> <small>Link color</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Use the <code>&lt;CAlertLink&gt;</code> component to immediately
-            give matching colored links inside any alert.
-          </p>
-          <DocsExample href="components/alert.html#link-color">
-            <CAlert color="primary">
-              A simple primary alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="secondary">
-              A simple secondary alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="success">
-              A simple success alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="danger">
-              A simple danger alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="warning">
-              A simple warning alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="info">
-              A simple info alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="light">
-              A simple light alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-            <CAlert color="dark">
-              A simple dark alert with
-              <CAlertLink href="#">an example link</CAlertLink>. Give it a click
-              if you like.
-            </CAlert>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Alert</strong> <small>Additional content</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Alert can also incorporate supplementary components &amp; elements
-            like heading, paragraph, and divider.
-          </p>
-          <DocsExample href="components/alert.html#additional-content">
-            <CAlert color="success">
-              <CAlertHeading tag="h4">Well done!</CAlertHeading>
-              <p>
-                Aww yeah, you successfully read this important alert message.
-                This example text is going to run a bit longer so that you can
-                see how spacing within an alert works with this kind of content.
-              </p>
-              <hr />
-              <p class="mb-0">
-                Whenever you need to, be sure to use margin utilities to keep
-                things nice and tidy.
-              </p>
-            </CAlert>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
-    <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader>
-          <strong>Vue Alert</strong> <small>Dismissing</small>
-        </CCardHeader>
-        <CCardBody>
-          <p class="text-body-secondary small">
-            Alerts can also be easily dismissed. Just add the
-            <code>dismissible</code> prop.
-          </p>
-          <DocsExample href="components/alert.html#dismissing">
-            <CAlert color="warning" dismissible @dismiss="alert">
-              <strong>Go right ahead</strong> and click that dimiss over there
-              on the right.
-            </CAlert>
-          </DocsExample>
-        </CCardBody>
-      </CCard>
-    </CCol>
+      <div class="d-flex align-items-center justiy-content-center">
+        <h2 class="mb-4 mx-2">Project uitnodigingen</h2>
+      </div>
+    <CCol :md="12" class="mb-4">
+      <CTable>
+        <CTableHead>
+          <CTableRow>
+            <CTableHeaderCell scope="col">invite</CTableHeaderCell>
+            <CTableHeaderCell scope="col">status</CTableHeaderCell>
+            <CTableHeaderCell scope="col"> accepteren</CTableHeaderCell>
+            <CTableHeaderCell scope="col"> verwijderen</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+        <CTableBody>
+          <CTableRow v-for="invitation in this.invitations" :key="invitation.id">
+            <CTableHeaderCell scope="row">{{ invitation.memberToInvite.username }} heeft je uitgenodigd om mee te werken aan {{ invitation.project.name }}</CTableHeaderCell>
+            <CTableDataCell>{{ this.status[invitation.status] }}</CTableDataCell>
+            <CTableDataCell>
+              <CButton v-if="this.shouldShowActions(invitation)" color="success" @click="this.acceptInvitation(invitation.id)" class="w-100">afwijzen</CButton>
+            </CTableDataCell>
+
+            <CTableDataCell>
+              <CButton v-if="this.shouldShowActions(invitation)" color="danger" @click="this.toggleDeleteModal(invitation.id)" class="w-100">afwijzen</CButton>
+            </CTableDataCell>
+          </CTableRow>
+        </CTableBody>
+      </CTable>
+  </CCol>
+
+  <CModal :backdrop="true" :keyboard="true" :visible="visibleDeleteModal" @close="closeDeleteModal">
+    <CModalHeader>
+      <CModalTitle>Project verwijderen</CModalTitle>
+    </CModalHeader>
+    <CModalBody>
+      <h5>Weet u zeker dat u deze uitnodiging wilt afwijzen?</h5>
+      <p></p>
+    </CModalBody>
+    <CModalFooter>
+      <CButton color="secondary" @click="closeDeleteModal">anuleren</CButton>
+      <CButton color="danger" @click="this.rejectInvitation(this.idToDelete)">Verwijderen</CButton>
+    </CModalFooter>
+  </CModal>
+
   </CRow>
 </template>
 
 <script>
+import { CButton, CCardBody, CCardHeader, CFormTextarea } from '@coreui/vue';
+
+
 export default {
-  name: 'Alerts',
-  methods: {
-    alert: function () {
-      alert('👋 Well, hi there! Thanks for dismissing me.')
-    },
+  name: "Notifications",
+  components: {
+    CButton,
+    CCardBody,
+    CCardHeader
   },
+  data() {
+  return { 
+    visibleCreateModal: false,
+    visibleDeleteModal: false,
+    invitations: [],
+    invitation: {
+      email: '',
+    },
+    status: {
+      "0": "In afwachting",
+      "1": "Geaccepteert",
+      "2": "Verlopen",
+      "3": "Gewijgerd"
+    }
+  }
+},
+
+async created(){
+  this.invitations = await this.$store.dispatch("getInviationsForUser");
+},
+methods: {
+  toggleCreateModal() {
+    this.visibleCreateModal = true;
+  },
+  shouldShowActions(invitation){
+    if(invitation.status == 1 || invitation.status == 3){
+      return false;
+    }else{
+      return true;
+    }
+  },
+  closeCreateModal() {
+    this.visibleCreateModal = false;
+  },
+  toggleDeleteModal(id) {
+    this.idToDelete = id;
+    this.visibleDeleteModal = true;
+  },
+  closeDeleteModal() {
+    this.visibleDeleteModal = false;
+  },
+  async sendInvitation(){
+    const craetedInvitation = await this.$store.dispatch("createInvitation", {projectId: this.$route.params.id,  email: this.invitation.email});
+    this.invitations = await this.$store.dispatch("getInviationsForProject", {projectId: this.$route.params.id});
+    this.visibleCreateModal = false;
+  },
+
+  async rejectInvitation(id){
+    await this.$store.dispatch("rejectInvitation", {invitationId: id});
+    this.invitations = this.invitations.filter(invitation => invitation.id !== id);
+    this.closeDeleteModal();
+  },
+  
+  async acceptInvitation(id){
+    await this.$store.dispatch("acceptInvitation", {invitationId: id});
+    this.invitations = this.invitations.filter(invitation => invitation.id !== id);
+    this.closeDeleteModal();
+  },
+  
+  async accepttInvitation(id){
+    await this.$store.dispatch("rejectInvitation", {invitationId: id});
+    this.invitations = this.invitations.filter(invitation => invitation.id !== id);
+    this.closeDeleteModal();
+  },
+
+  navigateToInvitationsForProject(projectId){
+    this.$router.push({ path: `project/${projectId}/notifications`});
+  }
+}
 }
 </script>

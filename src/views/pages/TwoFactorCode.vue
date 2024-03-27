@@ -8,14 +8,17 @@
                 <CForm>
                   <h1>Twee factor authenticatie</h1>
                   <p class="text-body-secondary">Er is een email gestuurd naar test@test.nl met een 4-cijferige code. vul de code in onderstaande veld in.</p>
+                  <CAlert v-if="this.invalidCodeError" color="danger"
+                    >Uw ingevulde code is onjuist. Probeer het nogmaal!</CAlert
+                  >
                   <CInputGroup class="mb-3">
                     <CInputGroupText>
                       <CIcon icon="cil-lock" />
                     </CInputGroupText>
-                    <CFormInput placeholder="verficatie code" />
+                    <CFormInput data-cy="code" v-model="this.code" placeholder="verficatie code" />
                   </CInputGroup>
                   <div class="d-grid">
-                    <CButton color="success" @click="() => this.$router.push({ path: '/' })" class="mb-2">Verifieren</CButton>
+                    <CButton color="success" @click="this.verifyCode" class="mb-2">Verifieren</CButton>
                   </div>
                 </CForm>
               </CCardBody>
@@ -29,6 +32,39 @@
   <script>
   export default {
     name: 'TwoFactorCode',
+    data () {
+      return {
+        invalidCodeError: false,
+        email: '',
+        password: '',
+        code: ''
+      }
+    },
+    created () {
+      this.email = this.$route.query.email
+      this.password = this.$route.query.password
+    },
+    methods: {
+      async verifyCode () {
+        try{
+          console.log({email: this.email, password: this.password, code: this.code})
+          const response = await this.$store.dispatch('login', {
+            email: this.email,
+            password: this.password,
+            twoFactorCode: this.code
+          })
+
+          if (response.status === 200) {
+            this.$router.push({ path: '/' })
+          }
+        }catch(error){ 
+          const response = error.response;
+          if(response.status === 401) {
+            this.invalidCodeError = true;
+          }
+        }
+      }
+    }
   }
   </script>
   

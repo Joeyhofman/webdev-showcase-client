@@ -5,29 +5,26 @@
         <CTable>
           <CTableHead>
             <CTableRow>
-              <CTableHeaderCell scope="col">#</CTableHeaderCell>
               <CTableHeaderCell scope="col">gebruikersnaam</CTableHeaderCell>
               <CTableHeaderCell scope="col">emaiil</CTableHeaderCell>
               <CTableHeaderCell scope="col"> bewereken</CTableHeaderCell>
-              <CTableHeaderCell scope="col"> verwijderen</CTableHeaderCell>
+              <CTableHeaderCell scope="col"> actief</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
           <CTableBody>
             <CTableRow v-for="user in this.users" :key="user.id">
-              <CTableHeaderCell scope="row">{{ user.id }}</CTableHeaderCell>
               <CTableDataCell>{{ user.username}}</CTableDataCell>
               <CTableDataCell>{{ user.email }}</CTableDataCell>
               <CTableDataCell>
                 <CButton color="secondary" class="w-100" @click="this.toggleEditModal(user)">edit</CButton>
               </CTableDataCell>
               <CTableDataCell>
-                <CButton color="danger" class="w-100" @click="this.toggleDeleteModal">delete</CButton>
+                <CButton color="danger" v-if="user.lockoutEnabled" class="w-100" @click="this.toggleDeleteModal(user.id)">gedeactiveerd</CButton>
+                <CButton color="primary" v-if="!user.lockoutEnabled" class="w-100" @click="this.toggleDeleteModal(user.id)">actief</CButton>
               </CTableDataCell>
             </CTableRow>
           </CTableBody>
         </CTable>
-
-
     </CCol>
 
 
@@ -37,11 +34,22 @@
         <CModalTitle>Bewereken</CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <EditUser />
+        <CForm>
+          <CInputGroup class="mb-3">
+            <CInputGroupText>
+              <CIcon icon="cil-user" />
+            </CInputGroupText>
+            <CFormInput v-model="this.userToUpdate.username" placeholder="Gebruikersnaam" autocomplete="gebruikersnaam" />
+          </CInputGroup>
+          <CInputGroup class="mb-3">
+            <CInputGroupText>@</CInputGroupText>
+            <CFormInput v-model="this.userToUpdate.email" placeholder="Email" autocomplete="email" />
+          </CInputGroup>
+        </CForm>
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" @click="closeEditModal">anuleren</CButton>
-        <CButton color="primary">Bijwereken</CButton>
+        <CButton color="primary" @click="editUser">Bijwereken</CButton>
       </CModalFooter>
     </CModal>
 
@@ -55,7 +63,7 @@
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" @click="closeDeleteModal">anuleren</CButton>
-        <CButton color="danger">Verwijderen</CButton>
+        <CButton color="danger" @click="this.deativateUser">Verwijderen</CButton>
       </CModalFooter>
     </CModal>
     </CRow>
@@ -77,44 +85,51 @@ import EditUser  from "@/views/users/EditUser.vue";
       return {
         visibleEditModal: false,
         visibleDeleteModal: false,
-        users: [
-          {
-            id: 1,
-            username: 'Otto',
-            email: 'otto@example.com',
-          },
-          {
-            id: 2,
-            username: 'Joey Hofman',
-            email: 'joeyhofman1@gmail.com',
-          },
-          {
-            id: 3,
-            username: 'Joey Hofman',
-            email: 'joeyhofman1@gmail.com',
-          },
-          {
-            id: 4,
-            username: 'Joey Hofman',
-            email: 'joeyhofman1@gmail.com',
-          },
-        ]
+        idToDelete: '',
+        userToUpdate: {},
+        users: []
       }
     },
+
+  async created(){
+    const users = await this.$store.dispatch("getUsersFromApi");
+    this.users = users;
+  },
   methods: {
-    toggleEditModal() {
+    toggleEditModal(user) {
+      this.userToUpdate = user;
+      console.log(this.userToUpdate)
       this.visibleEditModal = true;
     },
     closeEditModal() {
+      this.userToUpdate = {};
       this.visibleEditModal = false;
     },
-    toggleDeleteModal() {
+    toggleDeleteModal(id) {
+      this.idToDelete = id;
       this.visibleDeleteModal = true;
+    },
+    deativateUser(){
+      this.$store.dispatch("deativateUser", this.idToDelete);
+      let index = this.users.findIndex(user => user.id === this.idToDelete);
+
+      if (index !== -1) {
+          this.users[index].lockoutEnabled = !this.users[index].lockoutEnabled;
+      }
+      this.visibleDeleteModal = false;
     },
     closeDeleteModal() {
       this.visibleDeleteModal = false;
+    },
+    editUser(){
+      this.$store.dispatch("editUser", this.userToUpdate);
+      let index = this.users.findIndex(user => user.id === this.userToUpdate.id);
+      if (index!== -1) {
+          this.users[index].userName = this.userToUpdate.userName;
+          this.users[index].email = this.userToUpdate.email;
+      }
     }
   }
-  }
+}
   </script>
   

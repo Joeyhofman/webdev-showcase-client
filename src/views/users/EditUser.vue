@@ -8,11 +8,11 @@
                 <CInputGroupText>
                   <CIcon icon="cil-user" />
                 </CInputGroupText>
-                <CFormInput placeholder="Gebruikersnaam" autocomplete="gebruikersnaam" />
+                <CFormInput v-model="userToUpdate.userName" placeholder="Gebruikersnaam" autocomplete="gebruikersnaam" />
               </CInputGroup>
               <CInputGroup class="mb-3">
                 <CInputGroupText>@</CInputGroupText>
-                <CFormInput placeholder="Email" autocomplete="email" />
+                <CFormInput v-model="userToUpdate.email" placeholder="Email" autocomplete="email" />
               </CInputGroup>
             </CForm>
           </CCardBody>
@@ -27,6 +27,9 @@ import { CButton, CCardBody, CCardHeader } from '@coreui/vue';
 
   export default {
     name: "EditUser",
+    props: [
+      "userToUpdate"
+    ],
     components: {
       CButton,
       CCardBody,

@@ -22,6 +22,9 @@
       <CDropdownItem @click="logOut">
         <CIcon icon="cil-lock-locked" /> Uitloggen
       </CDropdownItem>
+      <CDropdownItem @click="navigateToSetupTwoFactorAuth">
+        <CIcon icon="cil-lock-locked" /> 2 factor authenticatie inschakelen
+      </CDropdownItem>
     </CDropdownMenu>
   </CDropdown>
 </template>
@@ -37,11 +40,16 @@ export default {
     }
   },
   methods: {
-    logOut(){
+    async logOut(){
+      await this.$store.dispatch("logout");
       this.$router.push('/pages/login');
+      
     },
     navigateToNotifications(){
       this.$router.push('/notifications');
+    },
+    navigateToSetupTwoFactorAuth(){
+      this.$router.push('/setup-two-factor-auth');
     }
   }
 }
