@@ -1,4 +1,4 @@
-import axios from "axios";
+import { apiClient, bearerConfig } from '@/common/apiClient'
 
 const state = {
   projects: {}
@@ -14,40 +14,27 @@ const actions = {
 
   async getProjectsFromApi({ commit }){
     try {
-
-      const authToken = sessionStorage.getItem('token');
-      const config = {
-        headers: {
-            'Authorization': `Bearer ${authToken}`
-        }
-    };
-
-      const response = await axios.get(`https://localhost:7215/projects`, config);
+      const response = await apiClient.get('/projects', bearerConfig())
       if(response.status === 200){
-        const projects = response.data.result;
-        return Promise.resolve(projects);
+        const projects = response.data.result ?? response.data
+        return Promise.resolve(projects)
       }
+      return Promise.resolve([])
     } catch (error) {
-      return Promise.reject(error);
+      return Promise.reject(error)
     }
   },
 
   async createProject({ commit }, data) {
     try {
-      const authToken = sessionStorage.getItem('token');
-      const config = {
-        headers: {
-            'Authorization': `Bearer ${authToken}`
-        }
-    };
-
-      const response = await axios.post(`https://localhost:7215/projects/`, {name: data.name, description: data.description}, config);
-      if(response.status === 200){
-        const project = response.data.result;
-        return Promise.resolve(project);
+      const response = await apiClient.post('/projects', { name: data.name, description: data.description }, bearerConfig())
+      if (response.status === 200 || response.status === 201) {
+        const project = response.data.result ?? response.data
+        return Promise.resolve(project)
       }
+      return Promise.reject(response)
     } catch (error) {
-      return Promise.reject(error.response);
+      return Promise.reject(error?.response ?? error)
     }
   },
 
@@ -60,7 +47,7 @@ const actions = {
         }
     };
 
-      const response = await axios.delete(`https://localhost:7215/projects/${data.projectId}`, config);
+      const response = await apiClient.delete(`/projects/${data.projectId}`, bearerConfig())
       if(response.status === 200){
         return Promise.resolve();
       }
@@ -79,7 +66,7 @@ const actions = {
         }
     };
 
-      const response = await axios.get(`https://localhost:7215/projects/${data.projectId}/diagrams`, config);
+      const response = await apiClient.get(`/projects/${data.projectId}/diagrams`, bearerConfig())
       if(response.status === 200){
         const diagrams = response.data;
         return Promise.resolve(diagrams);
@@ -99,7 +86,7 @@ const actions = {
         }
     };
 
-      const response = await axios.get(`https://localhost:7215/invitations`, config);
+      const response = await apiClient.get('/invitations', bearerConfig())
       if(response.status === 200){
         const invitations = response.data;
         console.log(invitations);
@@ -119,7 +106,7 @@ const actions = {
         }
     };
 
-      const response = await axios.post(`https://localhost:7215/projects/${data.projectId}/invitations/`, {email: data.email}, config);
+      const response = await apiClient.post(`/projects/${data.projectId}/invitations`, {email: data.email}, bearerConfig())
       if(response.status === 200){
         const invitation = response.data.result;
         return Promise.resolve(invitation);
@@ -138,7 +125,7 @@ const actions = {
         }
     };
 
-      const response = await axios.put(`https://localhost:7215/invitations/accept`, {invitationId: data.invitationId}, config);
+      const response = await apiClient.put('/invitations/accept', {invitationId: data.invitationId}, bearerConfig())
       if(response.status === 200){
         const invitation = response.data.result;
         return Promise.resolve(invitation);
@@ -157,7 +144,7 @@ const actions = {
         }
     };
 
-      const response = await axios.put(`https://localhost:7215/invitations/reject`, {invitationId: data.invitationId}, config);
+      const response = await apiClient.put('/invitations/reject', {invitationId: data.invitationId}, bearerConfig())
       if(response.status === 200){
         const invitation = response.data.result;
         return Promise.resolve(invitation);
@@ -176,7 +163,7 @@ const actions = {
         }
     };
 
-      const response = await axios.delete(`https://localhost:7215/projects/${data.projectId}/invitations/${data.id}`, config);
+      const response = await apiClient.delete(`/projects/${data.projectId}/invitations/${data.id}`, bearerConfig())
       if(response.status === 200){
         return Promise.resolve();
       }

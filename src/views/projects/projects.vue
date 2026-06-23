@@ -131,10 +131,12 @@ import { CButton, CCardBody, CCardHeader, CFormTextarea } from '@coreui/vue';
     async createProject(project){
       try{
         const createdProject = await this.$store.dispatch("createProject", { name: this.project.name, description: this.project.description});
+        console.log('createProject response', createdProject)
         this.projects.push(createdProject);
         this.visibleCreateModal = false;
       }catch(errorResponse){
-        if(errorResponse.status === 400){
+        console.error('createProject error', errorResponse)
+        if(errorResponse?.status === 400){
           this.projectNameErrors = errorResponse.data.errors.name;
           this.projectDescriptionErrors = errorResponse.data.errors.description;
         }

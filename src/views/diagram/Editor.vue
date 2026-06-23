@@ -49,6 +49,7 @@ import { DataflowPoint } from "./js/diagrams/dataflowDiagram/primitives/Dataflow
 import { DataflowAssociation } from "./js/diagrams/dataflowDiagram/primitives/relationships/DataflowAssociation.js"
 
 import * as signalR from '@microsoft/signalr';
+import { config } from '@/config/appconfig'
 
   export default {
     name: "Editor",
@@ -77,7 +78,7 @@ import * as signalR from '@microsoft/signalr';
     this.diagram = diagram;
     
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7215/hubs/diagramediting', {
+      .withUrl(`${config.apiUrl.replace(/\/$/, '')}/hubs/diagramediting`, {
         accessTokenFactory: () => sessionStorage.getItem("token"),
     })
       .build();

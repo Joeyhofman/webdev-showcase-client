@@ -1,4 +1,4 @@
-import axios from "axios";
+import { apiClient, bearerConfig } from '@/common/apiClient'
 
 const state = {
   accessToken: null,
@@ -27,59 +27,49 @@ const mutations = {
 const actions = {
   async login({ commit }, credentials) {
     try {
-      const response = await axios.post('https://localhost:7215/login', credentials);
-        if(response.status === 200){
-          const { accessToken, refreshToken } = response.data;
-          commit('SET_ACCESS_TOKEN', accessToken);
-          sessionStorage.setItem('token', accessToken);
-          commit('SET_REFRESH_TOKEN', refreshToken);
-          return Promise.resolve(response);
-        }
+      const response = await apiClient.post('/login', credentials)
+      if (response.status === 200) {
+        const { accessToken, refreshToken } = response.data
+        commit('SET_ACCESS_TOKEN', accessToken)
+        sessionStorage.setItem('token', accessToken)
+        commit('SET_REFRESH_TOKEN', refreshToken)
+        return Promise.resolve(response)
+      }
     } catch (error) {
-        return Promise.reject(error);
-    }  
+      return Promise.reject(error)
+    }
   },
 
   async updateTwoFactorAuthPreference({ commit }, preferences) {
-    const config = {
-        headers: {
-            'Authorization': `Bearer ${getters.getAuthToken()}`
-        }
-    };
-    const response = await axios.post('https://localhost:7215/manage/2fa', preferences, config);
-    console.log(response);
-    return Promise.resolve(response);
-},
+    const response = await apiClient.post('/manage/2fa', preferences, bearerConfig())
+    console.log(response)
+    return Promise.resolve(response)
+  },
 
-  async getUser(){
+  async getUser() {
     try {
-      const response = await axios.get('https://localhost:7215/user');
-      const { accessToken, refreshToken, user } = response.data;
-      commit('SET_ACCESS_TOKEN', accessToken);
-      commit('SET_REFRESH_TOKEN', refreshToken);
-      commit('SET_USER', user);
+      const response = await apiClient.get('/user', bearerConfig())
+      const { accessToken, refreshToken, user } = response.data
+      commit('SET_ACCESS_TOKEN', accessToken)
+      commit('SET_REFRESH_TOKEN', refreshToken)
+      commit('SET_USER', user)
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   },
   async register({ commit }, userData) {
-      const response = await axios.post('https://localhost:7215/register', userData);
-      const { accessToken, refreshToken, user } = response.data;
-      commit('SET_ACCESS_TOKEN', accessToken);
-      commit('SET_REFRESH_TOKEN', refreshToken);
-      return Promise.resolve(response);
+      const response = await apiClient.post('/register', userData)
+      const { accessToken, refreshToken, user } = response.data
+      commit('SET_ACCESS_TOKEN', accessToken)
+      commit('SET_REFRESH_TOKEN', refreshToken)
+      return Promise.resolve(response)
   },
   async logout({ commit }) {
-      const config = {
-          headers: {
-              'Authorization': `Bearer ${getters.getAuthToken()}`
-          }
-      };
-      const response = await axios.post('https://localhost:7215/logout', {}, config);
-      commit('CLEAR_TOKENS');
-      sessionStorage.removeItem("token");
-      commit('SET_USER', null);
-      return response;
+      const response = await apiClient.post('/logout', {}, bearerConfig())
+      commit('CLEAR_TOKENS')
+      sessionStorage.removeItem("token")
+      commit('SET_USER', null)
+      return response
   }
 };
 

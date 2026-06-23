@@ -1,4 +1,4 @@
-import axios from "axios";
+import { apiClient, bearerConfig } from '@/common/apiClient'
 
 const state = {
   users: {}
@@ -22,8 +22,8 @@ const actions = {
         }
     };
 
-      const response = await axios.get('https://localhost:7215/users', config);
-      console.log(response);
+      const response = await apiClient.get('/users', bearerConfig())
+      console.log(response)
       if(response.status === 200){
         const users = response.data;
         commit('SET_USERS', users);
@@ -44,8 +44,8 @@ const actions = {
         }
     };
 
-      const response = await axios.delete(`https://localhost:7215/users/${id}`, config);
-      console.log(response);
+      const response = await apiClient.delete(`/users/${id}`, bearerConfig())
+      console.log(response)
       if(response.status === 200){
         return Promise.resolve();
       }
@@ -65,8 +65,8 @@ const actions = {
         }
     };
 
-      const response = await axios.put(`https://localhost:7215/users/${userToUpdate.id}`, { email: userToUpdate.email, userName: userToUpdate.userName},  config);
-      console.log(response);
+      const response = await apiClient.put(`/users/${userToUpdate.id}`, { email: userToUpdate.email, userName: userToUpdate.userName}, bearerConfig())
+      console.log(response)
       if(response.status === 200){
         return Promise.resolve();
       }

@@ -1,8 +1,7 @@
 import { h, nextTick, resolveComponent } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
-import axios from 'axios'
-
-import { config } from '@/config/appConfig'
+import { apiClient, bearerConfig } from '@/common/apiClient'
+import { config } from '@/config/appconfig'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
 
@@ -372,14 +371,7 @@ const router = createRouter({
 
 async function isAuthenticated() {
   try {
-    const authToken = sessionStorage.getItem('token')
-    const config = {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    }
-
-    const response = await axios.get(`${config.apiUrl}users/auth`, config)
+    const response = await apiClient.get('/users/auth', bearerConfig())
     if (response.status === 401) {
       return false
     } else if (response.status === 200) {
@@ -393,14 +385,7 @@ async function isAuthenticated() {
 
 async function userHasRole(role) {
   try {
-    const authToken = sessionStorage.getItem('token')
-    const config = {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
-    }
-
-    const response = await axios.get(`https://localhost:7215/users/role/${role}`, config)
+    const response = await apiClient.get(`/users/role/${role}`, bearerConfig())
     if (response.status == 401 || response.status === 403) {
       return false
     }
