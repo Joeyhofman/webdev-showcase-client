@@ -2,8 +2,9 @@ import { h, nextTick, resolveComponent } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import axios from 'axios'
 
-import DefaultLayout from '@/layouts/DefaultLayout'
+import { config } from '@/config/appConfig'
 
+import DefaultLayout from '@/layouts/DefaultLayout'
 
 const routes = [
   {
@@ -15,64 +16,61 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        meta: {requiresAuth: true},
-        component: () =>
-          import(
-            '@/views/dashboard/Dashboard.vue'
-          ),
+        meta: { requiresAuth: true },
+        component: () => import('@/views/dashboard/Dashboard.vue'),
       },
       {
-        path: "/projects/:id/diagrams",
-        name: "projectdiagrams",
-        meta: {requiresAuth: true},
-        component: () => import('@/views/projects/diagrams/Diagrams.vue')
+        path: '/projects/:id/diagrams',
+        name: 'projectdiagrams',
+        meta: { requiresAuth: true },
+        component: () => import('@/views/projects/diagrams/Diagrams.vue'),
       },
       {
-        path: "/projects/:id/invitations",
-        name: "Projects-notifications",
-        meta: {requiresAuth: true},
-        component: () => import('@/views/projects/invitations/invitations.vue')
+        path: '/projects/:id/invitations',
+        name: 'Projects-notifications',
+        meta: { requiresAuth: true },
+        component: () => import('@/views/projects/invitations/invitations.vue'),
       },
       {
-        path: "/projects",
-        name: "Projects",
-        meta: {requiresAuth: true},
-        component: () => import('@/views/projects/projects.vue')
+        path: '/projects',
+        name: 'Projects',
+        meta: { requiresAuth: true },
+        component: () => import('@/views/projects/projects.vue'),
       },
       {
-        path: "/setup-two-factor-auth",
-        name: "SetupTwoFactorAuth",
-        meta: {requiresAuth: true},
-        component: () => import('@/views/twofactorauth/SetupTwoFactorAuth.vue')
+        path: '/setup-two-factor-auth',
+        name: 'SetupTwoFactorAuth',
+        meta: { requiresAuth: true },
+        component: () => import('@/views/twofactorauth/SetupTwoFactorAuth.vue'),
       },
       {
         path: '/users',
-        name: "Users",
-        meta: {requiresAuth: true, requiresRole: "Admin"},
+        name: 'Users',
+        meta: { requiresAuth: true, requiresRole: 'Admin' },
         component: () => import('@/views/users/Users.vue'),
       },
       {
         path: '/theme',
         name: 'Theme',
-        meta: {requiresAuth: true},
+        meta: { requiresAuth: true },
         redirect: '/theme/typography',
       },
       {
         path: '/theme/colors',
         name: 'Colors',
-        meta: {requiresAuth: true},
+        meta: { requiresAuth: true },
         component: () => import('@/views/theme/Colors.vue'),
       },
       {
         path: '/theme/typography',
         name: 'Typography',
-        meta: {requiresAuth: true},
+        meta: { requiresAuth: true },
         component: () => import('@/views/theme/Typography.vue'),
       },
       {
         path: '/base',
         name: 'Base',
-        meta: {requiresAuth: true},
+        meta: { requiresAuth: true },
         component: {
           render() {
             return h(resolveComponent('router-view'))
@@ -83,85 +81,85 @@ const routes = [
           {
             path: '/base/accordion',
             name: 'Accordion',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Accordion.vue'),
           },
           {
             path: '/base/breadcrumbs',
             name: 'Breadcrumbs',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Breadcrumbs.vue'),
           },
           {
             path: '/base/cards',
             name: 'Cards',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Cards.vue'),
           },
           {
             path: '/base/carousels',
             name: 'Carousels',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Carousels.vue'),
           },
           {
             path: '/base/collapses',
             name: 'Collapses',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Collapses.vue'),
           },
           {
             path: '/base/list-groups',
             name: 'List Groups',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/ListGroups.vue'),
           },
           {
             path: '/base/navs',
             name: 'Navs',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Navs.vue'),
           },
           {
             path: '/base/paginations',
             name: 'Paginations',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Paginations.vue'),
           },
           {
             path: '/base/placeholders',
             name: 'Placeholders',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Placeholders.vue'),
           },
           {
             path: '/base/popovers',
             name: 'Popovers',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Popovers.vue'),
           },
           {
             path: '/base/progress',
             name: 'Progress',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Progress.vue'),
           },
           {
             path: '/base/spinners',
             name: 'Spinners',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Spinners.vue'),
           },
           {
             path: '/base/tables',
             name: 'Tables',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Tables.vue'),
           },
           {
             path: '/base/tooltips',
             name: 'Tooltips',
-            meta: {requiresAuth: true},
+            meta: { requiresAuth: true },
             component: () => import('@/views/base/Tooltips.vue'),
           },
         ],
@@ -339,25 +337,25 @@ const routes = [
       {
         path: 'login',
         name: 'Login',
-        meta: {requiresLogout: true},
+        meta: { requiresLogout: true },
         component: () => import('@/views/pages/Login'),
       },
       {
         path: 'register',
         name: 'Register',
-        meta: {requiresLogout: true},
+        meta: { requiresLogout: true },
         component: () => import('@/views/pages/Register'),
       },
       {
         path: 'twofactorcode',
         name: 'TwoFactorCode',
-        meta: {requiresLogout: true},
+        meta: { requiresLogout: true },
         component: () => import('@/views/pages/TwoFactorCode'),
       },
       {
         path: 'editor/:projectId/:diagramId',
         name: 'Editor',
-        meta: {requiresAuth: true},
+        meta: { requiresAuth: true },
         component: () => import('@/views/diagram/Editor.vue'),
       },
     ],
@@ -365,86 +363,81 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory("/"),
+  history: createWebHashHistory('/'),
   routes,
   scrollBehavior() {
     return { top: 0 }
   },
 })
 
-
 async function isAuthenticated() {
   try {
-    const authToken = sessionStorage.getItem('token');
+    const authToken = sessionStorage.getItem('token')
     const config = {
       headers: {
-          'Authorization': `Bearer ${authToken}`
-      }
-    };
-
-    const response = await axios.get(`https://localhost:7215/users/auth`, config);
-    if(response.status === 401){
-      return false;
-    } else if(response.status === 200){
-      return true;
+        Authorization: `Bearer ${authToken}`,
+      },
     }
-    return false;
+
+    const response = await axios.get(`${config.apiUrl}users/auth`, config)
+    if (response.status === 401) {
+      return false
+    } else if (response.status === 200) {
+      return true
+    }
+    return false
   } catch (error) {
-    return false;
+    return false
   }
 }
 
-async function userHasRole(role){
+async function userHasRole(role) {
   try {
-    const authToken = sessionStorage.getItem('token');
-        const config = {
-          headers: {
-              'Authorization': `Bearer ${authToken}`
-          }
-      };
-  
-  
-        const response = await axios.get(`https://localhost:7215/users/role/${role}`, config);
-        if(response.status == 401 || response.status === 403){
-          return false;
-        }
-        const hasRole = response.data.result;
-        return hasRole;
+    const authToken = sessionStorage.getItem('token')
+    const config = {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
+
+    const response = await axios.get(`https://localhost:7215/users/role/${role}`, config)
+    if (response.status == 401 || response.status === 403) {
+      return false
+    }
+    const hasRole = response.data.result
+    return hasRole
   } catch (error) {
-    return false;
+    return false
   }
 }
 
 router.beforeEach(async (to, from, next) => {
   try {
-    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-    const requiredRole = to.meta?.requiresRole;
-    const requiresLogout = to.meta?.requiresLogout;
-  
-    
-    if (requiresAuth && !await isAuthenticated()) {
-      next('/pages/login');
-    }else if(requiresLogout && await isAuthenticated()) {
-      console.log("redirecting to /")
-      next("/");
-    }else {
+    const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+    const requiredRole = to.meta?.requiresRole
+    const requiresLogout = to.meta?.requiresLogout
+
+    if (requiresAuth && !(await isAuthenticated())) {
+      next('/pages/login')
+    } else if (requiresLogout && (await isAuthenticated())) {
+      console.log('redirecting to /')
+      next('/')
+    } else {
       if (requiredRole) {
-        const hasRequiredRole = await userHasRole(requiredRole); // Pass the role name, not the boolean
+        const hasRequiredRole = await userHasRole(requiredRole) // Pass the role name, not the boolean
         if (!hasRequiredRole) {
-          next(from);
+          next(from)
         } else {
-          next();
+          next()
         }
       } else {
-        next();
+        next()
       }
     }
   } catch (error) {
-    next(false);
+    next(false)
   }
-});
+})
 
-export {
-  userHasRole
-}
+export { userHasRole }
 export default router
