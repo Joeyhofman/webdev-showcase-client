@@ -1,60 +1,81 @@
-name: Build and Push Frontend Image
+name: Frontend CI/CD
 
 on:
   push:
     branches:
       - main
-      - develop
-      - 'release/**'
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: joeyhofman/webdev-showcase-client
 
 jobs:
-  build-push-frontend:
+  build:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set Environment Tag
-        id: env-tag
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "tag=prod-latest" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
-            echo "tag=acceptance" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "tag=test" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Set API URL
-        id: api-url
-        run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "url=https://api.diagramming.com/" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.ref }}" == refs/heads/release/* ]]; then
-            echo "url=https://acceptance.api.diagramming.com/" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" = "refs/heads/develop" ]; then
-            echo "url=https://test.api.diagramming.com/" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Log in to GHCR
-        uses: docker/login-action@v3
+      - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - id: build
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           build-args: |
-            VITE_BACKEND_API_URL=${{ steps.api-url.outputs.url }}
+            VITE_BACKEND_API_URL=https://api.diagramming.com/
           tags: |
-            ghcr.io/joeyhofman/webdev-showcase-client:${{ steps.env-tag.outputs.tag }}
             ghcr.io/joeyhofman/webdev-showcase-client:${{ github.sha }}
+  acceptance:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: Acceptance
+      url: https://acceptance.diagramming.com
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: imjasonh/setup-crane@v0.4
+      - run: |
+          crane tag \
+            ghcr.io/joeyhofman/webdev-showcase-client@${{ needs.build.outputs.digest }} \
+            acceptance
+  production:
+    needs:
+      - build
+      - acceptance
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Production
+      url: https://diagramming.com
+
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: imjasonh/setup-crane@v0.4
+
+      - run: |
+          crane tag \
+            ghcr.io/joeyhofman/webdev-showcase-client@${{ needs.build.outputs.digest }} \
+            production
